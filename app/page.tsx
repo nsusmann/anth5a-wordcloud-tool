@@ -59,7 +59,7 @@ function QuestionCard({
   onSubmitted,
 }: {
   number: 1 | 2;
-  group: string;
+  group?: string;
   prompt: string;
   words: Word[];
   onSubmitted: () => Promise<void>;
@@ -96,7 +96,7 @@ function QuestionCard({
     <section className={`question-card question-${number}`} aria-labelledby={`question-${number}-title`}>
       <div className="question-heading">
         <span className="question-number">Question {number}</span>
-        <span className="group-label">Last names {group}</span>
+        {group && <span className="group-label">Last names {group}</span>}
       </div>
       <h2 id={`question-${number}-title`}>{prompt}</h2>
 
@@ -107,7 +107,7 @@ function QuestionCard({
             id={`answer-${number}`}
             value={answer}
             onChange={(event) => setAnswer(event.target.value)}
-            placeholder={number === 1 ? "e.g., hammer" : "e.g., sunset"}
+            placeholder={number === 2 ? "e.g., sunset" : ""}
             maxLength={80}
             autoComplete="off"
             aria-describedby={`status-${number}`}
@@ -205,7 +205,7 @@ export default function Home() {
       {loadError && <p className="load-error" role="alert">{loadError}</p>}
 
       <div className="questions-grid">
-        <QuestionCard number={1} group="A–K" prompt="Provide an example of something that is a tool." words={results[1]} onSubmitted={refresh} />
+        <QuestionCard number={1} prompt="Provide an example of something that is a tool." words={results[1]} onSubmitted={refresh} />
         <QuestionCard number={2} group="L–Z" prompt="Provide an example of something that is not a tool." words={results[2]} onSubmitted={refresh} />
       </div>
 
