@@ -1,14 +1,13 @@
-# ANTH 5A Classroom Word Clouds
+# ANTH 5A Classroom Word Cloud
 
-A two-question classroom participation tool for exploring what is and is not a tool.
+A one-question classroom participation tool for exploring what is a tool.
 
 **Live classroom link:** https://anth5a-wordcloud-tool.brandeis-4774.chatgpt.site
 
 ## What students can do
 
 - Students submit examples of things that are tools.
-- Students with last names L–Z submit examples of things that are not tools.
-- Anyone can refresh the results to see both word clouds side by side.
+- Anyone can refresh the results to see the class word cloud update.
 - Common English stop words, conjunctions, and numeric tokens are omitted from the clouds.
 
 ## Privacy
@@ -29,3 +28,4 @@ npm run dev
 ```
 
 For local database setup, apply the migration in `drizzle/` with Wrangler after the first build.
+
