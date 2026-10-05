@@ -74,16 +74,12 @@ h1 { margin: 0; font-size: clamp(2.2rem, 5vw, 4.8rem); line-height: 0.98; letter
 @keyframes spin { to { transform: rotate(360deg); } }
 .load-error { border: 1px solid #efb3aa; border-radius: .8rem; background: #fff0ed; color: #8d241c; padding: .8rem 1rem; }
 
-.questions-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 2.2vw, 2rem); }
+.questions-grid { display: grid; grid-template-columns: minmax(0, 900px); justify-content: center; }
 .question-card { position: relative; overflow: hidden; border: 1px solid rgba(16,35,63,.14); border-radius: 1.4rem; background: rgba(255,255,255,.9); box-shadow: 0 18px 50px rgba(20,48,82,.09); padding: clamp(1.1rem, 2.4vw, 2rem); }
 .question-card::before { content: ""; position: absolute; inset: 0 auto auto 0; width: 100%; height: .42rem; background: #00798c; }
-.question-2::before { background: #d1495b; }
 .question-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .question-number { color: #00798c; font-size: .82rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
-.question-2 .question-number { color: #bc3046; }
-.group-label { border-radius: 999px; background: #e7f4f5; color: #075d69; padding: .34rem .68rem; font-size: .85rem; font-weight: 750; }
-.question-2 .group-label { background: #fbe8eb; color: #98263a; }
-h2 { min-height: 4.6rem; margin: 1rem 0 1.05rem; font-size: clamp(1.45rem, 2.2vw, 2.1rem); line-height: 1.14; letter-spacing: -.025em; }
+h2 { margin: 1rem 0 1.05rem; font-size: clamp(1.45rem, 2.2vw, 2.1rem); line-height: 1.14; letter-spacing: -.025em; }
 .response-form label { display: block; margin-bottom: .42rem; font-size: .9rem; font-weight: 750; }
 .input-row { display: grid; grid-template-columns: 1fr auto; gap: .65rem; }
 .input-row input { height: 2.8rem; background: #fff; font-size: 1rem; }
@@ -105,7 +101,6 @@ footer strong { color: #173d64; }
   .refresh-area { width: 100%; justify-items: stretch; }
   .refresh-area span { text-align: center; }
   .questions-grid { grid-template-columns: 1fr; }
-  h2 { min-height: 0; }
 }
 
 @media (max-width: 470px) {
@@ -116,3 +111,4 @@ footer strong { color: #173d64; }
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
