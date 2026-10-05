@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type Word = { word: string; count: number };
-type Results = { 1: Word[]; 2: Word[] };
+type Results = { 1: Word[] };
 
-const EMPTY_RESULTS: Results = { 1: [], 2: [] };
+const EMPTY_RESULTS: Results = { 1: [] };
 const COLORS = ["#12355b", "#00798c", "#d1495b", "#edae49", "#30638e", "#5f4b8b"];
 
-function WordCloud({ words, question }: { words: Word[]; question: 1 | 2 }) {
+function WordCloud({ words }: { words: Word[] }) {
   const max = Math.max(1, ...words.map((item) => item.count));
   const arranged = useMemo(
     () => [...words].sort((a, b) => b.count - a.count || a.word.localeCompare(b.word)),
@@ -28,7 +28,7 @@ function WordCloud({ words, question }: { words: Word[]; question: 1 | 2 }) {
   }
 
   return (
-    <div className="word-cloud" aria-label={`Question ${question} word cloud`}>
+    <div className="word-cloud" aria-label="Class word cloud">
       {arranged.map((item, index) => {
         const scale = Math.sqrt(item.count / max);
         const size = 1 + scale * 2.1;
@@ -37,7 +37,7 @@ function WordCloud({ words, question }: { words: Word[]; question: 1 | 2 }) {
             key={item.word}
             title={`${item.word}: ${item.count} response${item.count === 1 ? "" : "s"}`}
             style={{
-              color: COLORS[(index + question) % COLORS.length],
+              color: COLORS[(index + 1) % COLORS.length],
               fontSize: `${size}rem`,
               fontWeight: item.count === max ? 800 : 650,
               transform: `rotate(${index % 5 === 0 ? -2 : index % 7 === 0 ? 2 : 0}deg)`,
@@ -51,16 +51,7 @@ function WordCloud({ words, question }: { words: Word[]; question: 1 | 2 }) {
   );
 }
 
-function QuestionCard({
-  number,
-  group,
-  prompt,
-  words,
-  onSubmitted,
-}: {
-  number: 1 | 2;
-  group?: string;
-  prompt: string;
+function QuestionCard({ words, onSubmitted }: {
   words: Word[];
   onSubmitted: () => Promise<void>;
 }) {
@@ -78,7 +69,7 @@ function QuestionCard({
       const response = await fetch("/api/responses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: number, text: value }),
+        body: JSON.stringify({ question: 1, text: value }),
       });
       const payload = (await response.json()) as { error?: string };
       if (!response.ok) throw new Error(payload.error || "Could not submit your response.");
@@ -93,37 +84,35 @@ function QuestionCard({
   }
 
   return (
-    <section className={`question-card question-${number}`} aria-labelledby={`question-${number}-title`}>
+    <section className="question-card" aria-labelledby="question-title">
       <div className="question-heading">
-        <span className="question-number">Question {number}</span>
-        {group && <span className="group-label">Last names {group}</span>}
+        <span className="question-number">Question 1</span>
       </div>
-      <h2 id={`question-${number}-title`}>{prompt}</h2>
+      <h2 id="question-title">Provide an example of something that is a tool.</h2>
 
       <form onSubmit={submit} className="response-form">
-        <label htmlFor={`answer-${number}`}>Your example</label>
+        <label htmlFor="answer-1">Your example</label>
         <div className="input-row">
           <Input
-            id={`answer-${number}`}
+            id="answer-1"
             value={answer}
             onChange={(event) => setAnswer(event.target.value)}
-            placeholder={number === 2 ? "e.g., sunset" : ""}
             maxLength={80}
             autoComplete="off"
-            aria-describedby={`status-${number}`}
+            aria-describedby="status-1"
           />
           <Button type="submit" disabled={busy || !answer.trim()}>
             <Send aria-hidden="true" />
             {busy ? "Sending" : "Submit"}
           </Button>
         </div>
-        <p id={`status-${number}`} className="form-status" aria-live="polite">
+        <p id="status-1" className="form-status" aria-live="polite">
           {status || "No name, email, or account is requested."}
         </p>
       </form>
 
       <div className="cloud-frame">
-        <WordCloud words={words} question={number} />
+        <WordCloud words={words} />
       </div>
       <p className="response-count">
         {words.reduce((total, item) => total + item.count, 0)} total word responses
@@ -145,7 +134,7 @@ export default function Home() {
       const response = await fetch("/api/responses", { cache: "no-store" });
       const payload = (await response.json()) as Results & { error?: string };
       if (!response.ok) throw new Error(payload.error || "Results are temporarily unavailable.");
-      setResults({ 1: payload[1] || [], 2: payload[2] || [] });
+      setResults({ 1: payload[1] || [] });
       setLastUpdated(new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" }));
     } catch (error) {
       setLoadError(error instanceof Error ? error.message : "Results are temporarily unavailable.");
@@ -169,9 +158,9 @@ export default function Home() {
     void Promise.resolve(
       context.registerTool(
         {
-          name: "refresh_word_clouds",
-          title: "Refresh word clouds",
-          description: "Reload both classroom word clouds and show the latest anonymous responses.",
+          name: "refresh_word_cloud",
+          title: "Refresh word cloud",
+          description: "Reload the classroom word cloud and show the latest anonymous responses.",
           inputSchema: { type: "object", properties: {}, additionalProperties: false },
           annotations: { readOnlyHint: true, untrustedContentHint: true },
           execute: async () => {
@@ -191,7 +180,7 @@ export default function Home() {
         <div>
           <p className="eyebrow">ANTH 5A • CLASS RESPONSE</p>
           <h1>What counts as a tool?</h1>
-          <p className="intro">Add one example, then refresh to watch the two class word clouds take shape.</p>
+          <p className="intro">Add one example, then refresh to watch the class word cloud take shape.</p>
         </div>
         <div className="refresh-area">
           <Button type="button" variant="outline" onClick={refresh} disabled={refreshing}>
@@ -205,8 +194,7 @@ export default function Home() {
       {loadError && <p className="load-error" role="alert">{loadError}</p>}
 
       <div className="questions-grid">
-        <QuestionCard number={1} prompt="Provide an example of something that is a tool." words={results[1]} onSubmitted={refresh} />
-        <QuestionCard number={2} group="L–Z" prompt="Provide an example of something that is not a tool." words={results[2]} onSubmitted={refresh} />
+        <QuestionCard words={results[1]} onSubmitted={refresh} />
       </div>
 
       <footer>
@@ -215,3 +203,4 @@ export default function Home() {
     </main>
   );
 }
+
