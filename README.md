@@ -6,9 +6,10 @@ A two-question classroom participation tool for exploring what is and is not a t
 
 ## What students can do
 
-- Students with last names A–K submit examples of things that are tools.
+- Students submit examples of things that are tools.
 - Students with last names L–Z submit examples of things that are not tools.
 - Anyone can refresh the results to see both word clouds side by side.
+- Common English stop words, conjunctions, and numeric tokens are omitted from the clouds.
 
 ## Privacy
 
