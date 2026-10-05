@@ -5,6 +5,21 @@ export const dynamic = "force-dynamic";
 
 const MAX_TEXT_LENGTH = 80;
 const MAX_WORDS = 8;
+const STOP_WORDS = new Set(
+  [
+    "a", "about", "after", "again", "all", "also", "am", "an", "and", "any", "are", "as", "at",
+    "be", "because", "been", "before", "being", "between", "both", "but", "by",
+    "can", "could", "did", "do", "does", "doing", "down", "during",
+    "each", "either", "else", "for", "from", "further", "had", "has", "have", "having", "he", "her",
+    "here", "hers", "herself", "him", "himself", "his", "how", "i", "if", "in", "into", "is", "it",
+    "its", "itself", "just", "me", "more", "most", "my", "myself", "neither", "no", "nor", "not",
+    "of", "off", "on", "once", "only", "or", "other", "our", "ours", "ourselves", "out", "over",
+    "same", "she", "should", "so", "some", "such", "than", "that", "the", "their", "theirs", "them",
+    "themselves", "then", "there", "these", "they", "this", "those", "through", "to", "too", "under",
+    "until", "up", "very", "was", "we", "were", "what", "when", "where", "which", "while", "who",
+    "whom", "why", "will", "with", "would", "you", "your", "yours", "yourself", "yourselves", "yet",
+  ],
+);
 
 function normalizeWords(value: string) {
   return value
@@ -12,7 +27,8 @@ function normalizeWords(value: string) {
     .toLocaleLowerCase("en-US")
     .replace(/[’']/g, "")
     .match(/[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*/gu)
-    ?.slice(0, MAX_WORDS) ?? [];
+    ?.filter((word) => !STOP_WORDS.has(word) && !/\d/u.test(word))
+    .slice(0, MAX_WORDS) ?? [];
 }
 
 export async function GET() {
@@ -23,7 +39,9 @@ export async function GET() {
     const result: Record<1 | 2, { word: string; count: number }[]> = { 1: [], 2: [] };
     for (const row of rows.results) {
       if (row.question === 1 || row.question === 2) {
-        result[row.question].push({ word: row.word, count: row.count });
+        if (!STOP_WORDS.has(row.word) && !/\d/u.test(row.word)) {
+          result[row.question].push({ word: row.word, count: row.count });
+        }
       }
     }
     return NextResponse.json(result, { headers: { "Cache-Control": "no-store" } });
@@ -48,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
     const words = normalizeWords(body.text);
     if (!words.length) {
-      return NextResponse.json({ error: "Please enter at least one word." }, { status: 400 });
+      return NextResponse.json({ error: "Please enter at least one descriptive word." }, { status: 400 });
     }
     const uniqueWords = [...new Set(words)];
     const statements = uniqueWords.map((word) =>
